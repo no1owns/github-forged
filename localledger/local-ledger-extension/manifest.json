@@ -6,16 +6,27 @@
   "action": {
     "default_popup": "popup.html",
     "default_icon": {
-        "16": "images/icon16.png",
-        "48": "images/icon48.png",
-       "128": "images/icon128.png"
-      }
+      "16": "images/icon16.png",
+      "48": "images/icon48.png",
+      "128": "images/icon128.png"
+    }
   },
-    "background": {
-        "service_worker": "background.js"
-    },
-    "permissions": [
-        "storage",
-        "activeTab"
-    ]
+  "background": {
+    "service_worker": "background.js"
+  },
+  "permissions": [
+    "storage",
+    "activeTab",
+    "scripting"  // Added this to allow injecting scripts dynamically
+  ],
+  "host_permissions": [
+    "*://www.amazon.*/dp/*"  // Grants access specifically to Amazon product pages
+  ],
+  "content_scripts": [
+    {
+      "matches": ["*://www.amazon.*/dp/*"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ]
 }
