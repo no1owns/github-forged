@@ -1,6 +1,7 @@
 // Content script to extract product details from Amazon and send to background.js
 
 (function() {
+    console.log("trying to extract prod details")
     function extractProductDetails() {
         const productTitle = document.getElementById('productTitle')?.innerText.trim();
         const priceElement = document.querySelector('.a-price .a-offscreen');
