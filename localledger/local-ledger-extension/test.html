@@ -3,38 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <title>Popup Test Page</title>
-    <script>
-        // Mock Chrome API implementation for testing
-        if (typeof chrome === "undefined") {
-            window.chrome = {
-                runtime: {
-                    sendMessage: function(message, callback) {
-                        console.log("Mock sendMessage called with message:", message);
-                        // Simulate a response
-                        callback({farewell: "Goodbye from mock!"});
-                        return true; // Indicate that the message was sent
-                    },
-                    onMessage: {
-                        addListener: function(listener) {
-                            console.log("Mock addListener called.");
-                            // Simulate receiving a message
-                            setTimeout(() => listener({greeting: "hello"}, {tab: {id: 123}}, () => {}), 1000);
-                        }
-                    }
-                }
-            };
-        }
-    </script>
 </head>
 <body>
     <h1>Testing Popup Functionality</h1>
     <button id="invokeApi">Invoke Chrome API</button>
 
-    <!-- Scripts are placed at the bottom to ensure elements are loaded first -->
+    <script>
+        // Unified Chrome API Mock which assumes presence and functionality
+        window.chrome = window.chrome || {};
+        chrome.runtime = {
+            sendMessage: function(message, callback) {
+                console.log("Mock sendMessage called with message:", message);
+                callback({farewell: "Goodbye from mock!"}); // Simulate a response
+            },
+            onMessage: {
+                addListener: function(listener) {
+                    console.log("Mock addListener called.");
+                    setTimeout(() => listener({greeting: "hello"}, {tab: {id: 123}}, () => {}), 1000);
+                }
+            }
+        };
+    </script>
+
     <script src="popup.js"></script>
 
     <script>
-        // Add event listener after ensuring the DOM is fully loaded
         document.addEventListener("DOMContentLoaded", function() {
             var button = document.getElementById('invokeApi');
             console.log('Content loaded, adding event listener.');
