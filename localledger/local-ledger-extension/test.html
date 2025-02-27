@@ -6,49 +6,48 @@
 </head>
 <body>
     <h1>Testing Popup Functionality</h1>
-    <button id="invokeApi">Invoke Chrome API</button>
 
-    <script>
-        // Unified Chrome API Mock which assumes presence and functionality
-        window.chrome = window.chrome || {};
-        chrome.runtime = {
-            sendMessage: function(message, callback) {
-                console.log("Mock sendMessage called with message:", message);
-                callback({farewell: "Goodbye from mock!"}); // Simulate a response
-            },
-            onMessage: {
-                addListener: function(listener) {
-                    console.log("Mock addListener called.");
-                    setTimeout(() => listener({greeting: "hello"}, {tab: {id: 123}}, () => {}), 1000);
-                }
-            }
-        };
-    </script>
+    <!-- Input for Amazon Product Link -->
+    <input type="text" id="amazonInput" placeholder="Enter Amazon Product Link">
+    <button id="searchButton">Search Product</button>
 
+    <!-- Area to display search results -->
+    <div id="searchResults">Results will appear here...</div>
+
+    <!-- Including the popup.js script -->
     <script src="popup.js"></script>
 
     <script>
         document.addEventListener("DOMContentLoaded", function() {
-            var button = document.getElementById('invokeApi');
-            console.log('Content loaded, adding event listener.');
+            const searchButton = document.getElementById('searchButton');
+            const amazonInput = document.getElementById('amazonInput');
+            const resultsDiv = document.getElementById('searchResults');
 
-            if (button) {
-                button.addEventListener('click', function() {
-                    console.log('Button clicked');
-                    try {
-                       if (chrome.runtime && chrome.runtime.sendMessage) {
-                        chrome.runtime.sendMessage({greeting: "hello"}, function(response) {
-                            alert('Response: ' + response.farewell);
-                        });
-                       } else {
-                           console.error("sendMessage not available");
-                       }
-                    } catch (error) {
-                        console.error('Error sending message:', error);
+            if (searchButton) {
+                searchButton.addEventListener('click', function() {
+                    console.log("Search button clicked.");
+                    const productLink = amazonInput.value;
+                    if(productLink) {
+                        handleProductSearch(productLink);
+                    } else {
+                        console.log("No Amazon product link entered.");
+                        resultsDiv.innerHTML = "Please enter a valid Amazon product link.";
                     }
                 });
             } else {
-                console.error('The button with ID "invokeApi" was not found.');
+                console.error("Search button not found.");
+            }
+
+            // Simulate a search function that processes the product link
+            function handleProductSearch(link) {
+                console.log("Processing search for:", link);
+                // Example of displaying a result
+                resultsDiv.innerHTML = "Searching for product details based on: " + link;
+
+                // Simulate an API call/response (this could be an AJAx call in a real scenario)
+                setTimeout(() => {
+                    resultsDiv.innerHTML = "Results for product link " + link + ": <br/>Example Product Details go here.";
+                }, 1500);
             }
         });
     </script>
