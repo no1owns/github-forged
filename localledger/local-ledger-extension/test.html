@@ -3,13 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title>Popup Test Page</title>
-</head>
-<body>
-    <h1>Testing Popup Functionality</h1>
-    <button id="invokeApi">Invoke Chrome API</button>
-
-    <!-- Mock Chrome API Script -->
     <script>
+        // Mock Chrome API implementation for testing
         if (typeof chrome === "undefined") {
             window.chrome = {
                 runtime: {
@@ -17,6 +12,7 @@
                         console.log("Mock sendMessage called with message:", message);
                         // Simulate a response
                         callback({farewell: "Goodbye from mock!"});
+                        return true; // Indicate that the message was sent
                     },
                     onMessage: {
                         addListener: function(listener) {
@@ -29,18 +25,38 @@
             };
         }
     </script>
+</head>
+<body>
+    <h1>Testing Popup Functionality</h1>
+    <button id="invokeApi">Invoke Chrome API</button>
 
-    <!-- Include the existing Popup JavaScript -->
+    <!-- Scripts are placed at the bottom to ensure elements are loaded first -->
     <script src="popup.js"></script>
 
     <script>
-        // Add listener to button for API invocation
-        document.getElementById('invokeApi').addEventListener('click', function() {
-            // Assuming popup.js handles some messaging
-            // Directly using mocked chrome API here 
-            chrome.runtime.sendMessage({greeting: "hello"}, function(response) {
-                alert('Response: ' + response.farewell);
-            });
+        // Add event listener after ensuring the DOM is fully loaded
+        document.addEventListener("DOMContentLoaded", function() {
+            var button = document.getElementById('invokeApi');
+            console.log('Content loaded, adding event listener.');
+
+            if (button) {
+                button.addEventListener('click', function() {
+                    console.log('Button clicked');
+                    try {
+                       if (chrome.runtime && chrome.runtime.sendMessage) {
+                        chrome.runtime.sendMessage({greeting: "hello"}, function(response) {
+                            alert('Response: ' + response.farewell);
+                        });
+                       } else {
+                           console.error("sendMessage not available");
+                       }
+                    } catch (error) {
+                        console.error('Error sending message:', error);
+                    }
+                });
+            } else {
+                console.error('The button with ID "invokeApi" was not found.');
+            }
         });
     </script>
 </body>
