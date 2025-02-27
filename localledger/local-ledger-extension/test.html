@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Popup Test Page</title>
+</head>
+<body>
+    <h1>Testing Popup Functionality</h1>
+    <button id="invokeApi">Invoke Chrome API</button>
+
+    <!-- Mock Chrome API Script -->
+    <script>
+        if (typeof chrome === "undefined") {
+            window.chrome = {
+                runtime: {
+                    sendMessage: function(message, callback) {
+                        console.log("Mock sendMessage called with message:", message);
+                        // Simulate a response
+                        callback({farewell: "Goodbye from mock!"});
+                    },
+                    onMessage: {
+                        addListener: function(listener) {
+                            console.log("Mock addListener called.");
+                            // Simulate receiving a message
+                            setTimeout(() => listener({greeting: "hello"}, {tab: {id: 123}}, () => {}), 1000);
+                        }
+                    }
+                }
+            };
+        }
+    </script>
+
+    <!-- Include the existing Popup JavaScript -->
+    <script src="popup.js"></script>
+
+    <script>
+        // Add listener to button for API invocation
+        document.getElementById('invokeApi').addEventListener('click', function() {
+            // Assuming popup.js handles some messaging
+            // Directly using mocked chrome API here 
+            chrome.runtime.sendMessage({greeting: "hello"}, function(response) {
+                alert('Response: ' + response.farewell);
+            });
+        });
+    </script>
+</body>
+</html>
