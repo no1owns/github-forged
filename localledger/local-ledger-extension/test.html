@@ -14,7 +14,6 @@
     <!-- Area to display search results -->
     <div id="searchResults">Results will appear here...</div>
 
-    <!-- Including the popup.js script -->
     <script src="popup.js"></script>
 
     <script>
@@ -23,31 +22,40 @@
             const amazonInput = document.getElementById('amazonInput');
             const resultsDiv = document.getElementById('searchResults');
 
-            if (searchButton) {
-                searchButton.addEventListener('click', function() {
-                    console.log("Search button clicked.");
-                    const productLink = amazonInput.value;
-                    if(productLink) {
-                        handleProductSearch(productLink);
-                    } else {
-                        console.log("No Amazon product link entered.");
-                        resultsDiv.innerHTML = "Please enter a valid Amazon product link.";
-                    }
+            searchButton.addEventListener('click', function() {
+                const productLink = amazonInput.value.trim();
+                if (productLink) {
+                    fetchProductDetails(productLink);
+                } else {
+                    resultsDiv.innerHTML = "Please enter a valid Amazon product link.";
+                }
+            });
+
+            // Function to simulate fetching data from an API
+            function fetchProductDetails(productURL) {
+                resultsDiv.innerHTML = "Loading product details...";
+                // Simulated fetch call
+                fetch('https://api.example.com/products', {
+                    method: 'POST', // GET if applicable
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ url: productURL })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data);
+                    displayResults(data);
+                })
+                .catch(error => {
+                    console.error('Error fetching product details:', error);
+                    resultsDiv.innerHTML = "Failed to load product details.";
                 });
-            } else {
-                console.error("Search button not found.");
             }
 
-            // Simulate a search function that processes the product link
-            function handleProductSearch(link) {
-                console.log("Processing search for:", link);
-                // Example of displaying a result
-                resultsDiv.innerHTML = "Searching for product details based on: " + link;
-
-                // Simulate an API call/response (this could be an AJAx call in a real scenario)
-                setTimeout(() => {
-                    resultsDiv.innerHTML = "Results for product link " + link + ": <br/>Example Product Details go here.";
-                }, 1500);
+            function displayResults(data) {
+                // Update the display area with API data
+                resultsDiv.innerHTML = `Product Name: ${data.name}<br>Description: ${data.description}<br>`;
             }
         });
     </script>
